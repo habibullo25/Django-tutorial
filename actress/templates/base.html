@@ -1,0 +1,65 @@
+{% load women_tag %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+</head>
+<body>
+    <header>
+        <ul>
+            {% for m in menu %}
+            <li>{{m.title}}</li>
+            {% endfor %}
+        </ul>
+    </header>
+    <ul>
+        {% if cat_selected == 0 %}
+        <li>All categories</li>
+        {% else %}
+        <li><a href="{% url 'main:home' %}">All categories</a></li>
+        {% endif %}
+        <li>{% get_categories  %}</li>
+        <a href="{% url 'main:add_status' %}"><li>Add status</li></a>
+        {% if request.user.is_authenticated %}
+        <li>{{user.username}}| <a href="{% url 'main:logout' %}">Logout</a></li>
+        {% else %}
+        <li>
+            <a href="{% url 'main:register' %}">Register</a>|<a href="{% url 'main:login' %}">Login</a>
+        </li>
+        {% endif %}
+    </ul>
+    {% show_cats %}
+    {% block content %}
+    {% endblock %}
+    {% if page_obj.has_other_pages %}
+    <nav class="list-pages">
+        <ul style="display: flex;justify-content:center;align-items:space-between;">
+            {% if page_obj.has_previous %}
+            <li style="list-style-type: none;">
+                <a href="?page={{page_obj.previous_page_number}}">&lt;</a>
+            </li>
+            {% endif %}
+
+            {% for p in paginator.page_range %}
+            {% if page_obj.number == p %}
+            <li style="list-style-type: none;">{{p}}</li>
+            {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+            <li style="list-style-type: none;" class="page-num">
+                <a href="?page={{p}}">{{p}}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li style="list-style-type: none;">
+                <a href="?page={{page_obj.next_page_number}}">&gt;</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+</body>
+</html>
